@@ -1,32 +1,29 @@
 # 🚀 Automação de Cadastro de Fornecedores - Zoho Creator
 
 ## 📌 Sobre o projeto
-Este projeto implementa um sistema de cadastro de fornecedores no Zoho Creator com automação inteligente utilizando APIs externas.
+
+Sistema desenvolvido no Zoho Creator com automação de cadastro de fornecedores utilizando integração com APIs externas.
 
 ## ⚙️ Funcionalidades
 
-- Consulta automática de CNPJ
-- Preenchimento automático de:
-  - Razão Social
-  - Nome Fantasia
-  - Situação Cadastral
-  - CEP
-- Consulta automática de CEP
-- Preenchimento automático de:
-  - Logradouro
-  - Bairro
-  - Cidade
-  - UF
+* Consulta automática de CNPJ
+* Preenchimento automático de dados da empresa
+* Consulta automática de CEP
+* Preenchimento automático de endereço
 
-## 🛠️ Tecnologias utilizadas
+## 🛠️ Tecnologias
 
-- Zoho Creator
-- Deluge Script
-- API BrasilAPI
+* Zoho Creator
+* Deluge Script
+* BrasilAPI
 
-## 🔗 APIs utilizadas
+## 🔗 APIs
 
-- https://brasilapi.com.br/api/cnpj/v1/
-- https://brasilapi.com.br/api/cep/v2/
+* https://brasilapi.com.br/api/cnpj/v1/
+* https://brasilapi.com.br/api/cep/v2/
 
+
+## 👨‍💻 Autor
+
+Gustavo Gonçalves Rodrigues 
 
