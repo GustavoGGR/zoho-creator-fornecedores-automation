@@ -1,0 +1,26 @@
+if(input.cep != null && input.cep.length() == 8)
+{
+    try 
+    {
+        resp = invokeurl
+        [
+            url :"https://brasilapi.com.br/api/cep/v2/" + input.cep
+            type :GET
+        ];
+
+        dados = resp.toMap();
+
+        input.logradouro = dados.get("street");
+        input.bairro = dados.get("neighborhood");
+        input.cidade = dados.get("city");
+        input.uf = dados.get("state");
+    }
+    catch(e)
+    {
+        alert "Erro ao buscar CEP.";
+    }
+}
+else
+{
+    alert "Digite um CEP válido com 8 números";
+}
