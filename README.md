@@ -29,7 +29,4 @@ Este projeto implementa um sistema de cadastro de fornecedores no Zoho Creator c
 - https://brasilapi.com.br/api/cnpj/v1/
 - https://brasilapi.com.br/api/cep/v2/
 
-## 💻 Exemplos de automação
-
-### Consulta de CNPJ
 
