@@ -1,0 +1,30 @@
+if(input.cnpj != null && input.cnpj.length() == 14)
+{
+    try 
+    {
+        resp = invokeurl
+        [
+            url :"https://brasilapi.com.br/api/cnpj/v1/" + input.cnpj
+            type :GET
+        ];
+
+        dados = resp.toMap();
+
+        input.razao_social = dados.get("razao_social");
+        input.nome_fantasia = dados.get("nome_fantasia");
+        input.situacao_cadastral = dados.get("descricao_situacao_cadastral");
+
+        if(dados.get("cep") != null)
+        {
+            input.cep = dados.get("cep");
+        }
+    }
+    catch(e)
+    {
+        alert "Erro ao buscar CNPJ.";
+    }
+}
+else
+{
+    alert "Digite um CNPJ válido com 14 números";
+}
