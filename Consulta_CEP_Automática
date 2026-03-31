@@ -1,4 +1,8 @@
-if(input.cep != null && input.cep.length() == 8)
+if(input.cep == null || input.cep.length() < 8)
+{
+    alert "Digite um CEP válido com 8 números.";
+}
+else
 {
     try 
     {
@@ -8,19 +12,24 @@ if(input.cep != null && input.cep.length() == 8)
             type :GET
         ];
 
-        dados = resp.toMap();
+        if(resp.isEmpty())
+        {
+            alert "CEP não encontrado. Preencha o endereço manualmente.";
+        }
+        else
+        {
+            dados = resp.toMap();
 
-        input.logradouro = dados.get("street");
-        input.bairro = dados.get("neighborhood");
-        input.cidade = dados.get("city");
-        input.uf = dados.get("state");
+            input.logradouro = dados.get("street");
+            input.bairro = dados.get("neighborhood");
+            input.cidade = dados.get("city");
+
+            estado = dados.get("state");
+            input.uf = estado.toUpperCase();
+        }
     }
     catch(e)
     {
-        alert "Erro ao buscar CEP.";
+        alert "Erro ao buscar CEP. Tente novamente em instantes.";
     }
-}
-else
-{
-    alert "Digite um CEP válido com 8 números";
 }
