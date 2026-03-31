@@ -1,35 +1,47 @@
-if(input.cep == null || input.cep.length() < 8)
+// Limpa o CEP: se for nulo vira "" e remove qualquer caractere que não seja número
+cepLimpo = ifnull(input.cep,"").replaceAll("[^0-9]","");
+
+// Validação: verifica se o CEP está vazio ou não tem exatamente 8 dígitos
+if(cepLimpo.isEmpty() || cepLimpo.length() != 8)
 {
-    alert "Digite um CEP válido com 8 números.";
+	// Exibe mensagem para o usuário corrigir o CEP
+	alert "Digite um CEP válido com 8 números.";
 }
 else
 {
-    try 
-    {
-        resp = invokeurl
-        [
-            url :"https://brasilapi.com.br/api/cep/v2/" + input.cep
-            type :GET
-        ];
+	try 
+	{
+		// Faz a chamada para a BrasilAPI passando o CEP
+		resp = invokeurl
+		[
+			url :"https://brasilapi.com.br/api/cep/v2/" + cepLimpo
+			type :GET
+		];
 
-        if(resp.isEmpty())
-        {
-            alert "CEP não encontrado. Preencha o endereço manualmente.";
-        }
-        else
-        {
-            dados = resp.toMap();
+		// Verifica se a API não retornou dados (CEP não encontrado)
+		if(resp == null || resp.isEmpty())
+		{
+			// Permite que o usuário preencha manualmente
+			alert "CEP não encontrado. Preencha o endereço manualmente.";
+		}
+		else
+		{
+			// Preenche o campo Logradouro com o valor retornado (ou vazio se não existir)
+			input.logradouro = ifnull(resp.get("street"),"");
 
-            input.logradouro = dados.get("street");
-            input.bairro = dados.get("neighborhood");
-            input.cidade = dados.get("city");
+			// Preenche o campo Bairro
+			input.bairro = ifnull(resp.get("neighborhood"),"");
 
-            estado = dados.get("state");
-            input.uf = estado.toUpperCase();
-        }
-    }
-    catch(e)
-    {
-        alert "Erro ao buscar CEP. Tente novamente em instantes.";
-    }
+			// Preenche o campo Cidade
+			input.cidade = ifnull(resp.get("city"),"");
+
+			// Preenche o campo UF e converte para maiúsculo
+			input.uf = ifnull(resp.get("state"),"").toUpperCase();
+		}
+	}
+	catch (e)
+	{
+		// Captura erro (API fora do ar, timeout, etc.)
+		alert "Erro ao buscar CEP. Tente novamente em instantes.";
+	}
 }
