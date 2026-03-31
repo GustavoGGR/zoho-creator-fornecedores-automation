@@ -1,37 +1,51 @@
+// Validação: verifica se o campo está vazio ou com menos de 14 dígitos
 if(input.cnpj == null || input.cnpj.length() < 14)
 {
+    // Exibe mensagem para o usuário corrigir o CNPJ
     alert "Por favor, digite um CNPJ válido com 14 números.";
 }
 else
 {
     try 
     {
+        // Faz a chamada para a BrasilAPI passando o CNPJ informado
         resp = invokeurl
         [
             url :"https://brasilapi.com.br/api/cnpj/v1/" + input.cnpj
             type :GET
         ];
 
+        // Verifica se a API não retornou dados (CNPJ inexistente)
         if(resp.isEmpty())
         {
             alert "CNPJ não encontrado na Receita Federal.";
         }
         else
         {
+            // Converte o retorno da API para um mapa (estrutura chave/valor)
             dados = resp.toMap();
 
+            // Preenche a Razão Social com o valor retornado pela API
             input.razao_social = dados.get("razao_social");
+
+            // Preenche o Nome Fantasia
             input.nome_fantasia = dados.get("nome_fantasia");
+
+            // Preenche a Situação Cadastral
             input.situacao_cadastral = dados.get("descricao_situacao_cadastral");
 
+            // Verifica se a API retornou CEP
             if(dados.get("cep") != null)
             {
+                // Preenche o campo CEP automaticamente
+                // Isso vai disparar o fluxo do CEP que você já criou
                 input.cep = dados.get("cep");
             }
         }
     }
     catch(e)
     {
+        // Captura erros como API fora do ar, timeout, etc.
         alert "Não foi possível consultar o CNPJ no momento. Tente novamente mais tarde.";
     }
 }
