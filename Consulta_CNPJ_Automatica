@@ -1,51 +1,41 @@
-// Validação: verifica se o campo está vazio ou com menos de 14 dígitos
-if(input.cnpj == null || input.cnpj.length() < 14)
+/* Verifica se o CNPJ digitado possui 14 dígitos */
+if(input.cnpj.length() == 14)
 {
-    // Exibe mensagem para o usuário corrigir o CNPJ
-    alert "Por favor, digite um CNPJ válido com 14 números.";
+	respostaCNPJ = invokeurl
+	[
+		url :"https://brasilapi.com.br/api/cnpj/v1/" + input.cnpj
+		type :GET
+	];
+	input.razao_social = ifnull(respostaCNPJ.get("razao_social"),"");
+	input.nome_fantasia = ifnull(respostaCNPJ.get("nome_fantasia"),"");
+	situacao = ifnull(respostaCNPJ.get("descricao_situacao_cadastral"),"");
+	if(situacao == "ATIVA")
+	{
+		input.situacao_cadastral = "Ativa";
+	}
+	else if(situacao == "BAIXADA")
+	{
+		input.situacao_cadastral = "Baixada";
+	}
+	else if(situacao == "SUSPENSA")
+	{
+		input.situacao_cadastral = "Suspensa";
+	}
+	else if(situacao == "INAPTA")
+	{
+		input.situacao_cadastral = "Inapta";
+	}
+	else if(situacao == "NULA")
+	{
+		input.situacao_cadastral = "Nula";
+	}
+	cepAPI = ifnull(respostaCNPJ.get("cep"),"");
+	if(cepAPI != "")
+	{
+		input.cep = cepAPI;
+	}
 }
 else
 {
-    try 
-    {
-        // Faz a chamada para a BrasilAPI passando o CNPJ informado
-        resp = invokeurl
-        [
-            url :"https://brasilapi.com.br/api/cnpj/v1/" + input.cnpj
-            type :GET
-        ];
-
-        // Verifica se a API não retornou dados (CNPJ inexistente)
-        if(resp.isEmpty())
-        {
-            alert "CNPJ não encontrado na Receita Federal.";
-        }
-        else
-        {
-            // Converte o retorno da API para um mapa (estrutura chave/valor)
-            dados = resp.toMap();
-
-            // Preenche a Razão Social com o valor retornado pela API
-            input.razao_social = dados.get("razao_social");
-
-            // Preenche o Nome Fantasia
-            input.nome_fantasia = dados.get("nome_fantasia");
-
-            // Preenche a Situação Cadastral
-            input.situacao_cadastral = dados.get("descricao_situacao_cadastral");
-
-            // Verifica se a API retornou CEP
-            if(dados.get("cep") != null)
-            {
-                // Preenche o campo CEP automaticamente
-                // Isso vai disparar o fluxo do CEP que você já criou
-                input.cep = dados.get("cep");
-            }
-        }
-    }
-    catch(e)
-    {
-        // Captura erros como API fora do ar, timeout, etc.
-        alert "Não foi possível consultar o CNPJ no momento. Tente novamente mais tarde.";
-    }
+	alert "O CNPJ deve conter 14 dígitos.";
 }
