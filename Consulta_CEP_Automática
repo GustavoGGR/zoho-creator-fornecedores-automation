@@ -1,47 +1,28 @@
-// Limpa o CEP: se for nulo vira "" e remove qualquer caractere que não seja número
-cepLimpo = ifnull(input.cep,"").replaceAll("[^0-9]","");
-
-// Validação: verifica se o CEP está vazio ou não tem exatamente 8 dígitos
-if(cepLimpo.isEmpty() || cepLimpo.length() != 8)
+/* Verifica se o CEP digitado possui 8 dígitos */
+if(input.cep.length() == 8)
 {
-	// Exibe mensagem para o usuário corrigir o CEP
-	alert "Digite um CEP válido com 8 números.";
+	/* Consulta a BrasilAPI usando o CEP informado */
+	respostaCEP = invokeurl
+	[
+		url :"https://brasilapi.com.br/api/cep/v2/" + input.cep
+		type :GET
+	];
+	/* Preenche o campo Logradouro com o valor retornado pela API */
+	input.logradouro = ifnull(respostaCEP.get("street"),"");
+	/* Preenche o campo Bairro com o valor retornado pela API */
+	input.bairro = ifnull(respostaCEP.get("neighborhood"),"");
+	/* Preenche o campo Cidade com o valor retornado pela API */
+	input.cidade = ifnull(respostaCEP.get("city"),"");
+	/* Captura a UF retornada pela API */
+	ufAPI = ifnull(respostaCEP.get("state"),"");
+	/* Preenche o campo UF com o valor retornado */
+	if(ufAPI != "")
+	{
+		input.uf = ufAPI;
+	}
 }
 else
 {
-	try 
-	{
-		// Faz a chamada para a BrasilAPI passando o CEP
-		resp = invokeurl
-		[
-			url :"https://brasilapi.com.br/api/cep/v2/" + cepLimpo
-			type :GET
-		];
-
-		// Verifica se a API não retornou dados (CEP não encontrado)
-		if(resp == null || resp.isEmpty())
-		{
-			// Permite que o usuário preencha manualmente
-			alert "CEP não encontrado. Preencha o endereço manualmente.";
-		}
-		else
-		{
-			// Preenche o campo Logradouro com o valor retornado (ou vazio se não existir)
-			input.logradouro = ifnull(resp.get("street"),"");
-
-			// Preenche o campo Bairro
-			input.bairro = ifnull(resp.get("neighborhood"),"");
-
-			// Preenche o campo Cidade
-			input.cidade = ifnull(resp.get("city"),"");
-
-			// Preenche o campo UF e converte para maiúsculo
-			input.uf = ifnull(resp.get("state"),"").toUpperCase();
-		}
-	}
-	catch (e)
-	{
-		// Captura erro (API fora do ar, timeout, etc.)
-		alert "Erro ao buscar CEP. Tente novamente em instantes.";
-	}
+	/* Exibe mensagem se o CEP não tiver 8 dígitos */
+	alert "O CEP deve conter 8 dígitos.";
 }
