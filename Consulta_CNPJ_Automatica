@@ -1,41 +1,38 @@
-/* Verifica se o CNPJ digitado possui 14 dígitos */
-if(input.cnpj.length() == 14)
+cnpj_limpo = input.Cnpj.replaceAll("[^0-9]","");
+if(cnpj_limpo == "")
 {
-	respostaCNPJ = invokeurl
+	return;
+}
+if(cnpj_limpo.length() != 14)
+{
+	alert "O CNPJ deve conter 14 dígitos numéricos.";
+	return;
+}
+try 
+{
+	url_cnpj = "https://brasilapi.com.br/api/cnpj/v1/" + cnpj_limpo;
+	resp = invokeurl
 	[
-		url :"https://brasilapi.com.br/api/cnpj/v1/" + input.cnpj
+		url :url_cnpj
 		type :GET
 	];
-	input.razao_social = ifnull(respostaCNPJ.get("razao_social"),"");
-	input.nome_fantasia = ifnull(respostaCNPJ.get("nome_fantasia"),"");
-	situacao = ifnull(respostaCNPJ.get("descricao_situacao_cadastral"),"");
-	if(situacao == "ATIVA")
+	// LOG DE SUCESSO
+	thisapp.fn_log_consulta("CNPJ",cnpj_limpo,"Sucesso",resp.toString());
+	// PREENCHIMENTO AUTOMÁTICO
+	input.Razao_Social = ifnull(resp.get("razao_social"),"");
+	input.Nome_Fantasia = ifnull(resp.get("nome_fantasia"),"");
+	input.Situacao_Cadastral = ifnull(resp.get("descricao_situacao_cadastral"),"");
+	// CEP AUTOMÁTICO
+	cep_api = ifnull(resp.get("cep"),"");
+	if(cep_api != "")
 	{
-		input.situacao_cadastral = "Ativa";
-	}
-	else if(situacao == "BAIXADA")
-	{
-		input.situacao_cadastral = "Baixada";
-	}
-	else if(situacao == "SUSPENSA")
-	{
-		input.situacao_cadastral = "Suspensa";
-	}
-	else if(situacao == "INAPTA")
-	{
-		input.situacao_cadastral = "Inapta";
-	}
-	else if(situacao == "NULA")
-	{
-		input.situacao_cadastral = "Nula";
-	}
-	cepAPI = ifnull(respostaCNPJ.get("cep"),"");
-	if(cepAPI != "")
-	{
-		input.cep = cepAPI;
+		cep_limpo = cep_api.replaceAll("[^0-9]","");
+		input.Cep = cep_limpo;
 	}
 }
-else
+catch (e)
 {
-	alert "O CNPJ deve conter 14 dígitos.";
+	// LOG DE ERRO
+	thisapp.fn_log_consulta("CNPJ",cnpj_limpo,"Erro",e.toString());
+	alert "Não foi possível consultar o CNPJ. Tente novamente.";
 }
