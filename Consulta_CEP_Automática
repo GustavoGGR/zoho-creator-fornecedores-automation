@@ -1,28 +1,38 @@
-/* Verifica se o CEP digitado possui 8 dígitos */
-if(input.cep.length() == 8)
+// Remove tudo que não for número do CEP (ex: traços)
+cep_limpo = input.Cep.replaceAll("[^0-9]","");
+// Se o campo estiver vazio, não faz nada
+if(cep_limpo == "")
 {
-	/* Consulta a BrasilAPI usando o CEP informado */
-	respostaCEP = invokeurl
+	return;
+}
+// Valida se o CEP tem exatamente 8 dígitos
+if(cep_limpo.length() != 8)
+{
+	alert "O CEP deve conter 8 dígitos.";
+	return;
+}
+try 
+{
+	// Monta a URL da API com o CEP informado
+	url_cep = "https://brasilapi.com.br/api/cep/v2/" + cep_limpo;
+	// Faz a requisição HTTP para a BrasilAPI
+	resp = invokeurl
 	[
-		url :"https://brasilapi.com.br/api/cep/v2/" + input.cep
+		url :url_cep
 		type :GET
 	];
-	/* Preenche o campo Logradouro com o valor retornado pela API */
-	input.logradouro = ifnull(respostaCEP.get("street"),"");
-	/* Preenche o campo Bairro com o valor retornado pela API */
-	input.bairro = ifnull(respostaCEP.get("neighborhood"),"");
-	/* Preenche o campo Cidade com o valor retornado pela API */
-	input.cidade = ifnull(respostaCEP.get("city"),"");
-	/* Captura a UF retornada pela API */
-	ufAPI = ifnull(respostaCEP.get("state"),"");
-	/* Preenche o campo UF com o valor retornado */
-	if(ufAPI != "")
-	{
-		input.uf = ufAPI;
-	}
+	// Registra no log que a consulta foi bem-sucedida
+	thisapp.fn_log_consulta("CEP",cep_limpo,"Sucesso",resp.toString());
+	// Preenche os campos automaticamente com os dados retornados
+	input.Logradouro = ifnull(resp.get("street"),"");
+	input.Bairro = ifnull(resp.get("neighborhood"),"");
+	input.Cidade = ifnull(resp.get("city"),"");
+	UF = ifnull(resp.get("state"),"");
 }
-else
+catch (e)
 {
-	/* Exibe mensagem se o CEP não tiver 8 dígitos */
-	alert "O CEP deve conter 8 dígitos.";
+	// Registra no log que houve erro na consulta
+	thisapp.fn_log_consulta("CEP",cep_limpo,"Erro",e.toString());
+	// Mostra mensagem amigável ao usuário
+	alert "CEP não encontrado. Preencha manualmente.";
 }
